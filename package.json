@@ -1,0 +1,62 @@
+{
+  "name": "english-prompt-evaluation",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "dotenv": "^17.4.2",
+      "zod": "^4.4.3",
+      "typescript": "^6.0.3",
+      "@types/bun": "^1.4.0",
+      "libsql": "0.5.29",
+      "ai": "^7.0.41",
+      "lucide-react": "^1.27.0",
+      "next-themes": "^0.4.6",
+      "react": "^19.2.8",
+      "react-dom": "^19.2.8",
+      "sonner": "^2.0.7",
+      "@types/react": "^19.2.17",
+      "@types/react-dom": "^19.2.3",
+      "tailwindcss": "^4.3.3"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "dev:web": "turbo run dev -F web --",
+    "dev:server": "turbo run dev -F server --",
+    "db:push": "turbo run db:push -F @english-prompt-evaluation/db --",
+    "db:studio": "turbo run db:studio -F @english-prompt-evaluation/db --",
+    "db:generate": "turbo run db:generate -F @english-prompt-evaluation/db --",
+    "db:migrate": "turbo run db:migrate -F @english-prompt-evaluation/db --",
+    "db:local": "turbo run db:local -F @english-prompt-evaluation/db --",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@english-prompt-evaluation/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@english-prompt-evaluation/config": "workspace:*",
+    "@types/bun": "catalog:",
+    "husky": "latest",
+    "oxfmt": "latest",
+    "oxlint": "latest",
+    "turbo": "^2.10.12",
+    "typescript": "catalog:",
+    "ultracite": "7.10.7"
+  },
+  "packageManager": "bun@1.4.0"
+}
