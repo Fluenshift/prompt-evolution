@@ -11,13 +11,14 @@ A localhost-only writing evaluator. Submit one Writing Sample, it goes through O
 ## Local development
 
 ```bash
-mise run setup
+mise install    # installs the pinned Bun
+bun run setup   # locked dependencies + .data
 ```
 
 Copy `apps/server/.env.example` to `apps/server/.env` and set `OPENROUTER_API_KEY`. The database defaults to `.data/local.db` from the repo root. Credentials stay server-side — never returned by the API, never bundled into browser assets.
 
 ```bash
-mise run dev
+bun run dev
 ```
 
 Open <http://127.0.0.1:3001>. Vite proxies `/api` to the loopback server. Migrations run before the server reports ready.
@@ -26,7 +27,7 @@ Open <http://127.0.0.1:3001>. Vite proxies `/api` to the loopback server. Migrat
 
 ```bash
 mkdir -p .data
-mise run docker:up
+bun run docker:up
 ```
 
 Or use the helper: `./scripts/project.sh start|stop|status|restart|rebuild|logs|down`. `stop` keeps containers and database; `rebuild` after source or dependency changes; `down` removes containers but keeps `.data`.
@@ -48,9 +49,9 @@ Full boundary: [`docs/product/DATA-POLICY.md`](docs/product/DATA-POLICY.md).
 ## Verification
 
 ```bash
-mise run verify       # tests, TypeScript + Effect diagnostics, lint, format, build
-mise run verify:e2e   # Playwright: create → reopen → Progress → delete, real SQLite
-mise run docker:smoke # loopback publication, non-loopback refusal, hostile Host/Origin,
+bun run verify       # tests, TypeScript + Effect diagnostics, lint, format, build
+bun run verify:e2e   # Playwright: create → reopen → Progress → delete, real SQLite
+bun run docker:smoke # loopback publication, non-loopback refusal, hostile Host/Origin,
                       # migrations, data survival across replacement, secret scan
 ```
 
@@ -59,7 +60,7 @@ mise run docker:smoke # loopback publication, non-loopback refusal, hostile Host
 The paid gate is separate:
 
 ```bash
-CALIBRATION_SPENT_USD=<previous-total> mise run calibrate:live
+CALIBRATION_SPENT_USD=<previous-total> bun run calibrate:live
 ```
 
 It runs the frozen synthetic fixtures with SDK retries disabled and refuses to start if the run would cross the $3 testing budget — see
@@ -69,7 +70,7 @@ yourself. Production also disables automatic retries: one attempt, 90-second
 deadline, 120-second HTTP idle limit, and routed-provider prices capped at
 $2/M input, $12/M output, $0 per request.
 
-`mise` is the human entry point; the underlying `bun run ...` scripts stay available for CI and debugging.
+`mise` only pins the toolchain; everything else runs through `bun run`. The pre-commit hook formats and lints the staged files, so `bun run check` and `bun run verify` stay the tree-wide gates.
 
 ## Layout
 
