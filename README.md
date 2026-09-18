@@ -1,130 +1,82 @@
-# english-prompt-evaluation
+# Prompt Evolution
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Elysia, and more.
+A localhost-only writing evaluator. Submit one Writing Sample, it goes through OpenRouter to a fixed OpenAI model, and the score and corrected text are derived locally under Rubric Version 1. Evidence is kept in local SQLite; history and Progress never leave the machine.
 
-## Features
+## Requirements
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Elysia** - Type-safe, high-performance framework
-- **Bun** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **SQLite/Turso** - Database engine
-- **Husky** - Git hooks for code quality
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Turborepo** - Optimized monorepo build system
+- Linux host with Docker Compose, or Bun 1.4.0 (pinned by `mise.toml`)
+- An OpenRouter API key
+- Chromium for the browser test: `bunx playwright install chromium`
 
-## Getting Started
-
-First, install the dependencies:
+## Local development
 
 ```bash
-bun install
+mise run setup
 ```
 
-## Database Setup
-
-This project uses SQLite with Drizzle ORM.
-
-1. Start the local SQLite database (optional):
+Copy `apps/server/.env.example` to `apps/server/.env` and set `OPENROUTER_API_KEY`. The database defaults to `.data/local.db` from the repo root. Credentials stay server-side — never returned by the API, never bundled into browser assets.
 
 ```bash
-bun run db:local
+mise run dev
 ```
 
-2. Update your `.env` file in the `apps/server` directory with the appropriate connection details if needed.
+Open <http://127.0.0.1:3001>. Vite proxies `/api` to the loopback server. Migrations run before the server reports ready.
 
-3. Apply the schema to your database:
+## Docker
 
 ```bash
-bun run db:push
+mkdir -p .data
+mise run docker:up
 ```
 
-Then, run the development server:
+Or use the helper: `./scripts/project.sh start|stop|status|restart|rebuild|logs|down`. `stop` keeps containers and database; `rebuild` after source or dependency changes; `down` removes containers but keeps `.data`.
+
+Open <http://127.0.0.1:3001>. Only `127.0.0.1:3001` is published — the app has no authentication and must stay host-only. One Bun/Elysia process serves both the API and the built client. Data persists at `./.data/local.db` across container replacement.
+
+Docker tasks map the container process to the invoking user's UID/GID so the bind mount stays writable without running as root. Calling `docker compose` directly means setting `PROMPT_EVOLUTION_UID=$(id -u)` and `PROMPT_EVOLUTION_GID=$(id -g)` yourself. `PROMPT_EVOLUTION_DATA_DIR` points the volume elsewhere; that directory must already exist and be writable.
+
+## Privacy
+
+- Nothing is sent or stored while typing.
+- **Evaluate writing** sends the full current Writing Sample through OpenRouter with `store: false`, no tools, and no conversation state. OpenRouter does not retain prompts unless logging is enabled, but the routed provider has its own policy — this is not a fully local evaluation.
+- Successful Evaluations stay in local SQLite until deliberate deletion. Failed attempts are not retained.
+- Deletion cascades to Findings, Suggestions, sample, and metadata. There are no backups, so it cannot be undone.
+- Setup & privacy shows the resolved data location, provider, model, and localhost boundary without revealing secrets.
+
+Full boundary: [`docs/product/DATA-POLICY.md`](docs/product/DATA-POLICY.md).
+
+## Verification
 
 ```bash
-bun run dev
+mise run verify       # tests, TypeScript + Effect diagnostics, lint, format, build
+mise run verify:e2e   # Playwright: create → reopen → Progress → delete, real SQLite
+mise run docker:smoke # loopback publication, non-loopback refusal, hostile Host/Origin,
+                      # migrations, data survival across replacement, secret scan
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+`docker:smoke` uses a throwaway data directory and Compose project and cleans up after itself. None of this establishes live model accuracy.
 
-## UI Customization
-
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
+The paid gate is separate:
 
 ```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
+CALIBRATION_SPENT_USD=<previous-total> mise run calibrate:live
 ```
 
-Import shared components like this:
+It runs the frozen synthetic fixtures with SDK retries disabled and refuses to start if the run would cross the $3 testing budget — see
+[`.scratch/testing-spend.md`](.scratch/testing-spend.md). Automated PASS is not
+a substitute for reading the explanations and checking meaning and tone
+yourself. Production also disables automatic retries: one attempt, 90-second
+deadline, 120-second HTTP idle limit, and routed-provider prices capped at
+$2/M input, $12/M output, $0 per request.
 
-```tsx
-import { Button } from "@english-prompt-evaluation/ui/components/button";
+`mise` is the human entry point; the underlying `bun run ...` scripts stay available for CI and debugging.
+
+## Layout
+
+```text
+apps/web       React, Vite, TanStack Router
+apps/server    Elysia HTTP boundary and server composition
+packages/db    Drizzle schema, Bun SQLite service, migrations
+packages/env   Effect-based server configuration
+packages/ui    Shared UI primitives
 ```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Deployment
-
-### Docker Compose
-
-- Target: web + server
-- Config: `docker-compose.yml` (app Dockerfiles live in `apps/*/Dockerfile`)
-- Build images: bun run docker:build
-- Start: bun run docker:up
-- Logs: bun run docker:logs
-- Stop: bun run docker:down
-
-Environment variables are read from each app's `.env` file (baked into web builds for public variables) and overridden in `docker-compose.yml` for container networking.
-
-Docker Compose uses the local `./.data/local.db` file. Run `bun run db:push` before starting the stack.
-
-For more details, see the guide on [Deploying with Docker Compose](https://www.better-t-stack.dev/docs/guides/docker).
-
-## Git Hooks and Formatting
-
-- Initialize hooks: `bun run prepare`
-- Run checks: `bun run check`
-
-## Project Structure
-
-```
-english-prompt-evaluation/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Elysia)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:server`: Start only the server
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
-- `bun run db:studio`: Open database studio UI
-- `bun run db:local`: Start the local SQLite database
-- `bun run check`: Run Oxlint and Oxfmt
-- `bun run docker:build`: Build the Docker Compose images
-- `bun run docker:up`: Build and start the Docker Compose stack
-- `bun run docker:logs`: Tail logs from the Docker Compose stack
-- `bun run docker:down`: Stop the Docker Compose stack

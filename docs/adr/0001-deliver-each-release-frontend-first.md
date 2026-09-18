@@ -1,0 +1,3 @@
+# Deliver each release frontend first
+
+Prompt Evolution will implement each release in a frontend-first cycle: build and approve browser behavior against a deterministic in-memory adapter, then implement the backend against the interface and observable examples established by that frontend. This replaces the earlier plan to build every increment end to end from the start. The choice makes interaction changes cheap before persistence and model integration create coupling, at the cost of a temporary fake and a later integration gate; backend work must replace rather than coexist with fake product behavior. Project documentation calls this the **frontend-first cycle**, because “BFF” commonly means “Backend for Frontend” and would make the decision ambiguous.
