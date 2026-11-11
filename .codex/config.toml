@@ -1,0 +1,5 @@
+[mcp_servers.effect-docs]
+command = "bunx"
+args = ["effect-mcp@latest"]
+
+[mcp_servers.effect-docs.env]

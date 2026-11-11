@@ -70,6 +70,8 @@ yourself. Production also disables automatic retries: one attempt, 90-second
 deadline, 120-second HTTP idle limit, and routed-provider prices capped at
 $2/M input, $12/M output, $0 per request.
 
+Each submitted Evaluation writes one structured `writing-evaluation` log event. It includes the outcome code, correlation ID, elapsed time, provider, model, request deadline, and output-token limit. It never includes the Writing Sample, credential, or provider request and response bodies.
+
 `mise` only pins the toolchain; everything else runs through `bun run`. The pre-commit hook formats and lints the staged files, so `bun run check` and `bun run verify` stay the tree-wide gates.
 
 ## Layout

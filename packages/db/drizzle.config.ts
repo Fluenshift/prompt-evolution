@@ -1,15 +1,18 @@
 import dotenv from "dotenv";
 import { defineConfig } from "drizzle-kit";
+import { Config, Effect } from "effect";
 
 dotenv.config({
   path: "../../apps/server/.env",
 });
 
+const databaseUrl = Effect.runSync(Config.nonEmptyString("DATABASE_URL"));
+
 export default defineConfig({
-  schema: "./src/schema",
-  out: "./src/migrations",
-  dialect: "turso",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "",
+    url: databaseUrl,
   },
+  dialect: "sqlite",
+  out: "./src/migrations",
+  schema: "./src/schema",
 });

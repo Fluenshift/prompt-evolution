@@ -33,7 +33,7 @@
     "db:generate": "turbo run db:generate -F @english-prompt-evaluation/db --",
     "db:migrate": "turbo run db:migrate -F @english-prompt-evaluation/db --",
     "db:push": "turbo run db:push -F @english-prompt-evaluation/db --",
-    "db:seed": "bun --cwd apps/server ../../scripts/seed-local.ts",
+    "db:seed": "bun --cwd apps/server src/test/seed-local.ts",
     "db:studio": "turbo run db:studio -F @english-prompt-evaluation/db --",
     "dev": "turbo run dev",
     "dev:server": "turbo run dev -F server --",

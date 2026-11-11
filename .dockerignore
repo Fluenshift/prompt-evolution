@@ -1,5 +1,18 @@
 **/node_modules
 .git
+.codex
+.mcp.json
+.scratch
+
+AGENTS.md
+CLAUDE.md
+CONTEXT.md
+TODO.md
+
+**/.npmrc
+**/.yarnrc*
+**/*.key
+**/*.pem
 
 **/dist
 **/build

@@ -12,6 +12,7 @@ build
 apps/web/src/routeTree.gen.ts
 local.db
 local.db-*
+/.data/
 
 # Environment variables
 .env
@@ -50,6 +51,8 @@ lerna-debug.log*
 # Testing
 coverage
 .nyc_output
+/playwright-report/
+/test-results/
 
 # Misc
 *.tgz

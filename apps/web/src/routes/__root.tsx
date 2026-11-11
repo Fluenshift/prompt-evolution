@@ -1,52 +1,44 @@
 import { Toaster } from "@english-prompt-evaluation/ui/components/sonner";
-import { HeadContent, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import Header from "@/components/header";
-import { ThemeProvider } from "@/components/theme-provider";
+import type { EvaluationClient } from "@/features/evaluations/evaluation-client";
 
 import "../index.css";
 
-export interface RouterAppContext {}
+export interface RouterAppContext {
+  evaluationClient: EvaluationClient;
+}
+
+const RootComponent = () => (
+  <>
+    <HeadContent />
+    <div className="grid min-h-svh grid-rows-[auto_1fr]">
+      <Header />
+      <Outlet />
+    </div>
+    <Toaster richColors theme="light" />
+    <TanStackRouterDevtools position="bottom-left" />
+  </>
+);
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,
   head: () => ({
     meta: [
       {
-        title: "english-prompt-evaluation",
+        title: "Prompt Evolution",
       },
       {
+        content:
+          "Find and fix recurring English-writing errors in your prompts.",
         name: "description",
-        content: "english-prompt-evaluation is a web application",
-      },
-    ],
-    links: [
-      {
-        rel: "icon",
-        href: "/favicon.ico",
       },
     ],
   }),
 });
-
-function RootComponent() {
-  return (
-    <>
-      <HeadContent />
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        disableTransitionOnChange
-        storageKey="vite-ui-theme"
-      >
-        <div className="grid grid-rows-[auto_1fr] h-svh">
-          <Header />
-          <Outlet />
-        </div>
-        <Toaster richColors />
-      </ThemeProvider>
-      <TanStackRouterDevtools position="bottom-left" />
-    </>
-  );
-}

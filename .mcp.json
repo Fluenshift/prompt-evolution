@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "effect-docs": {
+      "command": "bunx",
+      "args": ["effect-mcp@0.1.16"]
+    }
+  }
+}

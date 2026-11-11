@@ -4,23 +4,21 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "tsdown",
+    "calibrate:live": "bun src/evaluation/live-calibration.ts",
     "check-types": "tsc -b",
+    "check:effect": "effect-tsgo diagnostics --project tsconfig.json --format pretty",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
     "dev": "bun run --hot src/index.ts",
-    "start": "bun run dist/index.mjs"
+    "start": "bun run dist/index.mjs",
+    "test": "bun test ./src"
   },
   "dependencies": {
-    "@ai-sdk/devtools": "^1.0.8",
-    "@ai-sdk/google": "^4.0.27",
-    "@elysiajs/cors": "^1.4.2",
     "@english-prompt-evaluation/db": "workspace:*",
     "@english-prompt-evaluation/env": "workspace:*",
-    "@sinclair/typebox": "^0.34.52",
-    "ai": "catalog:",
-    "dotenv": "catalog:",
+    "drizzle-orm": "^0.45.2",
+    "effect": "catalog:",
     "elysia": "^1.4.29",
-    "libsql": "catalog:",
-    "zod": "catalog:"
+    "openai": "^7.10.0"
   },
   "devDependencies": {
     "@english-prompt-evaluation/config": "workspace:*",

@@ -4,17 +4,23 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./server": "./src/server.ts",
-    "./web": "./src/web.ts"
+    "./server": "./src/server.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "check:effect": "effect-tsgo diagnostics --project tsconfig.json --format pretty",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@t3-oss/env-core": "^0.13.11",
     "dotenv": "catalog:",
-    "zod": "catalog:"
+    "effect": "catalog:"
   },
   "devDependencies": {
+    "@effect/vitest": "catalog:",
     "@english-prompt-evaluation/config": "workspace:*",
     "@types/bun": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

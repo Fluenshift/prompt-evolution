@@ -5,28 +5,33 @@
     ".": {
       "default": "./src/index.ts"
     },
+    "./schema": {
+      "default": "./src/schema/index.ts"
+    },
     "./*": {
       "default": "./src/*.ts"
     }
   },
   "scripts": {
-    "db:local": "turso dev --db-file local.db",
-    "db:push": "drizzle-kit push",
+    "check-types": "tsc -b",
+    "check:effect": "effect-tsgo diagnostics --project tsconfig.json --format pretty",
     "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "db:migrate:deploy": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:migrate": "drizzle-kit migrate"
+    "test": "bun test ./src",
+    "test:watch": "bun test --watch ./src"
   },
   "dependencies": {
     "@english-prompt-evaluation/env": "workspace:*",
-    "@libsql/client": "0.17.4",
-    "dotenv": "catalog:",
     "drizzle-orm": "^0.45.2",
-    "libsql": "catalog:",
-    "zod": "catalog:"
+    "effect": "catalog:"
   },
   "devDependencies": {
     "@english-prompt-evaluation/config": "workspace:*",
+    "@types/bun": "catalog:",
+    "dotenv": "catalog:",
     "drizzle-kit": "^0.31.10",
     "typescript": "catalog:"
   }
